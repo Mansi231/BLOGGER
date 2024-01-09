@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import logo from '../imgs/logo.png'
 import { Link, Outlet } from 'react-router-dom'
+import { ROUTES } from '../services/routes'
 const Navbar = () => {
 
     const [searchBoxVisibility, setSearchBoxVisibility] = useState(false)
@@ -16,7 +17,7 @@ const Navbar = () => {
                     <i className="fi fi-rr-search absolute right-[10%] md:left-5 md:pointer-events-none -translate-y-1/2 top-1/2 text-black text-xl"></i>
                 </div>
 
-                <div className='flex items-center gap-3 md:gap-6 ml-auto'>
+                <div className='flex items-center gap-3 ml-auto'>
                     <button className='md:hidden bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center' onClick={() => setSearchBoxVisibility((currentVal) => !currentVal)}>
                         <i className="fi fi-rr-search text-lg"></i>
                     </button>
@@ -25,10 +26,10 @@ const Navbar = () => {
                         <p>write</p>
                     </Link>
 
-                    <Link to={'/signin'} className='btn-dark'>
+                    <Link to={ROUTES.SIGN_IN} className='btn-dark'>
                         Sign In
                     </Link>
-                    <Link to={'/signup'} className='btn-light hidden md:block'>
+                    <Link to={ROUTES.SIGN_UP} className='btn-light hidden md:block'>
                         Sign Up
                     </Link>
                 </div>

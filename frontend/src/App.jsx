@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import Navbar from './components/navbar.component'
 import { Routes, Route } from "react-router-dom"
-import { ROUTES } from './services/Routes'
+import { ROUTES } from './services/routes'
 import UserAuthForm from './pages/userAuthForm.page'
 
 function App() {
