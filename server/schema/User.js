@@ -90,4 +90,5 @@ const userSchema = mongoose.Schema({
 
 })
 
+
 export default mongoose.model("users", userSchema);

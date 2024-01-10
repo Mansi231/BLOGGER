@@ -4,8 +4,8 @@ Content-Type: application/json
 
 {
     "fullname":"Mansi Gabani",
-    "email":"mansigabani@gamil.com",
-    "password":"123456"
+    "email":"mansigabani231@gamil.com",
+    "password":"Mansi123"
 }
 
 ### sign in

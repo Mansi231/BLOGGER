@@ -7,8 +7,8 @@ import cors from 'cors'; // Import the cors middleware
 const server = express();
 let PORT = process.env.PORT || 3000
 
-server.use(cors());
 server.use(express.json())
+server.use(cors());
 server.use('/api/user',userRoutes)
 
 mongoose.connect(process.env.MONGODB_URI, { autoIndex: true }).then((res) => console.log('database connection successfull')).catch((err) => console.log(`error in database connection : ${err}`))

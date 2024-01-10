@@ -1,10 +1,24 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import logo from '../imgs/logo.png'
 import { Link, Outlet } from 'react-router-dom'
 import { ROUTES } from '../services/routes'
+import { UserContext } from '../context/userAuth.context'
+import UserNavigationPanel from './user-navigation.component'
 const Navbar = () => {
 
     const [searchBoxVisibility, setSearchBoxVisibility] = useState(false)
+    const [userNavPanel, setUserNavPanel] = useState(false)
+
+    const { userAuthDetail, setUserAuthDetail } = useContext(UserContext)
+
+    const handleUserNavPanel = () =>{
+        setUserNavPanel((currentVal)=>!currentVal)
+    }
+
+    const handleBlur = () =>{
+        setTimeout(()=>{setUserNavPanel((currentVal)=>false)},200)
+    }
+
     return (
         <>
             <nav className='sticky border-b-2 border-gray-50 z-10 top-0 flex items-center w-full gap-12 px-[4vw] py-4 bg-white m-0'>
@@ -19,23 +33,41 @@ const Navbar = () => {
 
                 <div className='flex items-center gap-3 ml-auto'>
                     <button className='md:hidden bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center' onClick={() => setSearchBoxVisibility((currentVal) => !currentVal)}>
-                        <i className="fi fi-rr-search text-lg"></i>
+                        <i className="fi fi-rr-search mt-1 text-lg"></i>
                     </button>
-                    <Link to={'/editor'} className='hidden md:flex gap-2 link rounded'>
+                    <Link to={ROUTES.EDITOR} className='hidden md:flex gap-2 link rounded'>
                         <i className="fi fi-rr-file-edit"></i>
                         <p>write</p>
                     </Link>
 
-                    <Link to={ROUTES.SIGN_IN} className='btn-dark'>
-                        Sign In
-                    </Link>
-                    <Link to={ROUTES.SIGN_UP} className='btn-light hidden md:block'>
-                        Sign Up
-                    </Link>
+                    {
+                        userAuthDetail?.access_token ?
+                            <>
+                                <Link to={ROUTES.NOTIFICATION} className='h-fit'>
+                                    <button className='w-10 h-10 rounded-full relative bg-gray-100 hover:bg-black/10'>
+                                        <i className="fi fi-rr-bell text-lg block mt-1 text-center"></i>
+                                    </button>
+                                </Link>
+                                <div className='relative' onClick={handleUserNavPanel} onBlur={handleBlur}>
+                                    <button className='mt-1 w-10 h-10'>
+                                        <img src={userAuthDetail?.profile_img} alt="image" className='h-full w-full rounded-full object-cover' />
+                                    </button>
+                                    {userNavPanel && <UserNavigationPanel />}
+                                </div>
+                            </> :
+                            <>
+                                <Link to={ROUTES.SIGN_IN} className='btn-dark'>
+                                    Sign In
+                                </Link>
+                                <Link to={ROUTES.SIGN_UP} className='btn-light hidden md:block'>
+                                    Sign Up
+                                </Link>
+                            </>
+                    }
                 </div>
 
             </nav>
-            <Outlet/>
+            <Outlet />
         </>
     )
 }
