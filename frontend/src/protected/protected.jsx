@@ -11,7 +11,6 @@ const Protected = ({ Component }) => {
     const {pathname} = useLocation()
     const navigate = useNavigate()
 
-
     useEffect(()=>{
         switch (pathname) {
             case (ROUTES.SIGN_IN):
@@ -19,6 +18,9 @@ const Protected = ({ Component }) => {
                 break;
             case (ROUTES.SIGN_UP):
                 access_token == null ? navigate(ROUTES.SIGN_UP) : navigate(ROUTES.HOME)
+                break;
+            case (ROUTES.EDITOR):
+                access_token == null ? navigate(ROUTES.SIGN_IN) : navigate(ROUTES.EDITOR)
                 break;
         
             default:

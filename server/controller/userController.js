@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import User from '../schema/User.js'
 import { nanoid } from 'nanoid'
 import jwt from 'jsonwebtoken'
-
+import { getAuth } from 'firebase-admin/auth'
 
 const generateUsername = async (email, res) => {
     let username = email.split('@')[0]
@@ -43,12 +43,11 @@ const registerUser = asyncHandler(async (req, res) => {
         let userNameNotUnique = await User.exists({ "personal_info.email": email }).then((result) => {
             return result
         })
-        console.log(userNameNotUnique,email);
+        console.log(userNameNotUnique, email);
         if (userNameNotUnique) {
             return res.status(500).json({ error: 'Email is already exists.' })
         }
         else {
-            console.log('-entered-');
             user.save().then((u) => {
                 return res.status(200).json(dataToSend(u))
             }).catch((err) => {
@@ -69,6 +68,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     User.findOne({ "personal_info.email": email }).then((user) => {
         if (!user) return res.status(403).json({ error: 'Email not found.' })
+        if (user?.google_auth) return res.status(403).json({ error: 'Account was created with Gogole.Try again login with Google.' })
         bcrypt.compare(password, user?.personal_info?.password, (err, result) => {
             if (err) return res.status(403).json({ error: 'Error occured while login.' })
             if (!result) return res.status(403).json({ error: 'Invalid Password' })
@@ -78,4 +78,37 @@ const loginUser = asyncHandler(async (req, res) => {
 
 })
 
-export { registerUser, loginUser }
+const googleAuth = asyncHandler(async (req,res) => {
+    let { access_token } = req?.body
+    getAuth().verifyIdToken(access_token).then(async(decodedUser) => {
+        let { email, name ,picture} = decodedUser;
+
+        picture = picture.replace('s96-c','s384-c')
+        let user = await User.findOne({'personal_info.email':email}).select('personal_info.email personal_info.fullname personal_info.username personal_info.profile_img google_auth').then((u)=>{
+            return u || null
+        }).catch((err)=>{return res.status(500).json({error:err?.message})})
+
+        if(user){
+            if(!user?.google_auth){
+                return res.status(403).json({error:'This email was sign up without google. please login with password.'})
+            }
+            else {
+                return res.status(200).json(dataToSend(user)) 
+            }
+        }
+        else{
+            let username = await generateUsername(email)
+            user = new User({
+                personal_info:{fullname:name,username,email},
+                google_auth:true
+            })
+
+            await user.save().then((u)=>{user=u}).catch((err)=>{return res.status(500).json({error:err?.message})})
+        }
+
+        return res.status(200).json(dataToSend(user))
+
+    }).catch((err) => { return res.status(500).json({ error: err?.message }) })
+})
+
+export { registerUser, loginUser, googleAuth }

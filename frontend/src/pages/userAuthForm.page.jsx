@@ -6,8 +6,9 @@ import { ROUTES } from '../services/routes'
 import AnimationWrapper from '../common/page_animation'
 import toast, { Toaster } from 'react-hot-toast';
 import {useDispatch, useSelector} from 'react-redux'
-import { userAuth } from '../redux/slices/authSlice'
+import { userAuth, userGoogeAuth } from '../redux/slices/authSlice'
 import { UserContext } from '../context/userAuth.context'
+import { authWithGoogle } from '../common/firebase'
 
 const UserAuthForm = ({ type }) => {
 
@@ -43,6 +44,13 @@ const UserAuthForm = ({ type }) => {
         authApi(formValues)
     }
 
+    const handleGoogleAuth = (e) =>{
+        e.preventDefault()
+        authWithGoogle().then((u)=>{
+            dispatch(userGoogeAuth({token:u?.accessToken,setUserAuthDetail,toast}))
+        }).catch((err)=>{ toast.error('trouble with google login');return err })
+    }
+
     return (
         <AnimationWrapper keyValue={type}>
             <section className='h-cover flex items-center justify-center'>
@@ -62,7 +70,7 @@ const UserAuthForm = ({ type }) => {
                         <hr className='w-1/2 border-black' />
                     </div>
 
-                    <button className='btn-dark items-center flex gap-3 w-[90%] justify-center center'>
+                    <button className='btn-dark items-center flex gap-3 w-[90%] justify-center center' onClick={handleGoogleAuth}>
                         <img src={google} alt="google" className='w-7 h-7 rounded-full' />
                         continue with google
                     </button>
