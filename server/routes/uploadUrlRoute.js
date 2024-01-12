@@ -3,6 +3,6 @@ import { getUploadUrl } from '../controller/uploadUrlController.js'
 
 const router = express.Router()
 
-router.get('/get-upload-url',getUploadUrl)
+router.post('/get-upload-url',getUploadUrl)
 
 export default router 

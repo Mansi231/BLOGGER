@@ -1,7 +1,7 @@
 import aws from 'aws-sdk'
 import { nanoid } from 'nanoid';
 aws.config.suppressDeprecationWarnings = true;
-
+import axios from 'axios'
 
 // setting up s3 aws bucket
 
@@ -17,7 +17,7 @@ const generateUploadURL = async () => {
 
     try {
         const url = await s3.getSignedUrlPromise('putObject', {
-            Bucket: 'BlogApp',
+            Bucket: process.env.BUCKET_NAME,
             Key: imageName,
             Expires: 1000,
             ContentType: 'image/jpeg'
@@ -27,14 +27,38 @@ const generateUploadURL = async () => {
         console.error('AWS SDK Error:', error);
         throw error;
     }
-    
+
 }
 
 const getUploadUrl = async (req, res) => {
-    generateUploadURL().then((url) => res.status(200).json({ uploadURL: url })).catch((err) => {
-        console.log(err,' : error ')
-        return res.status(500).json({ error: err?.message })
-    })
-}
+    try {
+        let { image } = req?.body;
+
+        if (!image) {
+            return res.status(403).json({ error: 'Image file is missing. Please provide an image file.' });
+        }
+
+        // Generate upload URL
+        const url = await generateUploadURL();
+
+        // Make the PUT request using Axios
+        await axios({
+            method: 'PUT',
+            url,
+            headers: { "Content-Type": "multipart/form-data" },
+            data: image
+        });
+
+        // If the request is successful, send the response
+        return res.status(200).json({ imageUrl: url?.split('?')[0] });
+    } catch (err) {
+        // Log and handle errors
+        console.error('Error:', err);
+
+        // Return an appropriate error response
+        return res.status(500).json({ error: err.message || 'Internal Server Error' });
+    }
+};
+
 
 export { getUploadUrl }
