@@ -2,9 +2,11 @@ import 'dotenv/config'
 import express from 'express'
 import mongoose from 'mongoose'
 import userRoutes from './routes/userRoutes.js'
+import uploadUrlRoute from './routes/uploadUrlRoute.js'
 import cors from 'cors'; // Import the cors middleware
 import admin from 'firebase-admin'
 import serviceAccountKey from './mern-blog-web-app-firebase-adminsdk-tskzb-b37cc939a6.json' assert { type: 'json' };
+
 
 const server = express();
 let PORT = process.env.PORT || 3000
@@ -12,12 +14,13 @@ let PORT = process.env.PORT || 3000
 server.use(express.json())
 server.use(cors());
 server.use('/api/user',userRoutes)
+server.use('/api',uploadUrlRoute)
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccountKey)
-})
+admin.initializeApp({credential: admin.credential.cert(serviceAccountKey)})
 
 mongoose.connect(process.env.MONGODB_URI, { autoIndex: true }).then((res) => console.log('database connection successfull')).catch((err) => console.log(`error in database connection : ${err}`))
+
+
 
 server.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');

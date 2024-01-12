@@ -16,3 +16,6 @@ Content-Type: application/json
     "email":"mansigabani@gamil.com",
     "password":"123456"
 }
+
+### get upload url
+GET  http://localhost:3000/api/get-upload-url
