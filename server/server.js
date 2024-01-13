@@ -13,14 +13,15 @@ let PORT = process.env.PORT || 3000
 
 server.use(express.json())
 server.use(cors());
+server.use(express.urlencoded({
+    extended: true
+    }));
 server.use('/api/user',userRoutes)
 server.use('/api',uploadUrlRoute)
 
 admin.initializeApp({credential: admin.credential.cert(serviceAccountKey)})
 
 mongoose.connect(process.env.MONGODB_URI, { autoIndex: true }).then((res) => console.log('database connection successfull')).catch((err) => console.log(`error in database connection : ${err}`))
-
-
 
 server.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');

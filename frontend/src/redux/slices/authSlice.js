@@ -32,8 +32,9 @@ export const userGoogeAuth = createAsyncThunk('userGoogleAuth', async ({ token, 
 
 // image upload url 
 
-export const getImageUploadUrl = createAsyncThunk('getImageUploadUrl', async ({ toast, image }) => {
-    return client.post(`/get-upload-url`, { image }).then(async (res) => {
+export const getImageUploadUrl = createAsyncThunk('getImageUploadUrl', async ({ toast, formData }) => {
+
+    return client.post(`/get-upload-url`, formData).then(async (res) => {
         return res.data?.imageUrl
     }).catch((err) => {
         if (err?.response?.data?.error) {
@@ -43,13 +44,17 @@ export const getImageUploadUrl = createAsyncThunk('getImageUploadUrl', async ({ 
     })
 })
 
+
+// reducer slice 
+
 export const authSlice = createSlice({
     name: 'auth',
     initialState: {
         user: {},
         isLoading: false,
         isError: null,
-        imageUrl:null
+
+        imageUrl: null,
     },
     extraReducers: (builder) => {
         builder.
@@ -60,6 +65,12 @@ export const authSlice = createSlice({
             .addCase(userAuth.rejected, (state, action) => {
                 state.isError = action?.payload; state.isLoading = false
             })
+            .addCase(getImageUploadUrl.pending, (state, action) => {
+            })
+            .addCase(getImageUploadUrl.fulfilled, (state, action) => {
+                state.imageUrl = action.payload;
+            })
+            .addCase(getImageUploadUrl.rejected, (state, action) => {})
     }
 })
 

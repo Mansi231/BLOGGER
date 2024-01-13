@@ -13,49 +13,40 @@ const s3 = new aws.S3({
 
 const generateUploadURL = async () => {
     const date = new Date();
-    const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
+    const imageName = `${nanoid()}-${date.getTime()}.png`;
 
     try {
         const url = await s3.getSignedUrlPromise('putObject', {
             Bucket: process.env.BUCKET_NAME,
             Key: imageName,
             Expires: 1000,
-            ContentType: 'image/jpeg'
+            ContentType: 'image/png'
         });
         return url;
     } catch (error) {
         console.error('AWS SDK Error:', error);
         throw error;
     }
-
 }
 
 const getUploadUrl = async (req, res) => {
-    try {
-        let { image } = req?.body;
+    let image = req?.file;
 
-        if (!image) {
-            return res.status(403).json({ error: 'Image file is missing. Please provide an image file.' });
-        }
+    try {
+        if (!image) return res.status(403).json({ error: 'Image file is missing. Please provide an image file.' });
 
         // Generate upload URL
         const url = await generateUploadURL();
 
-        // Make the PUT request using Axios
-        await axios({
-            method: 'PUT',
-            url,
-            headers: { "Content-Type": "multipart/form-data" },
-            data: image
+        // Upload the file directly to S3
+        const result = await axios.put(url, image.buffer, {
+            headers: {
+                'Content-Type': 'image/png',
+            },
         });
-
-        // If the request is successful, send the response
         return res.status(200).json({ imageUrl: url?.split('?')[0] });
     } catch (err) {
-        // Log and handle errors
-        console.error('Error:', err);
-
-        // Return an appropriate error response
+        console.error(err);
         return res.status(500).json({ error: err.message || 'Internal Server Error' });
     }
 };

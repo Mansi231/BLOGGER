@@ -7,12 +7,12 @@ export const client = axios.create({
     baseURL:base_url,
     headers:{
         'Accept':'application/json',
-        'Content-Type':'application/json',
-        'Authorization':{
-            toString(){
-                let user = JSON.parse(localStorage.getItem(KEYS.USER))
-                if(user)return `Bearer ${user?.access_token}`
-            }
-        }
+        'Content-Type':'multipart/form-data',
+        // 'Authorization':{
+        //     toString(){
+        //         let user = JSON.parse(localStorage.getItem(KEYS.USER))
+        //         if(user)return `Bearer ${user?.access_token}`
+        //     }
+        // }
     }
 })

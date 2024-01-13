@@ -1,29 +1,38 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../services/routes'
 import logo from '../imgs/logo.png'
 import AnimationWrapper from '../common/page_animation'
 import defaultBanner from '../imgs/blog_banner.png'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getImageUploadUrl } from '../redux/slices/authSlice'
 import toast, { Toaster } from 'react-hot-toast';
 
 const BlogEditor = () => {
 
     const dispatch = useDispatch()
+    const { imageUrl , isImageUploading} = useSelector((state) => state?.auth)
     let blogBannerRef = useRef()
+
+    let loadingToast;
+    useEffect(() => {
+        if (imageUrl != null){ blogBannerRef.current.src = imageUrl;toast.dismiss(loadingToast);toast.success('uploaded 👍')}
+    }, [imageUrl])
+
 
     const handleBannerUpload = async (e) => {
         let image = e.target.files[0]
         let imgUrl = null;
         if (image) {
-         await dispatch(getImageUploadUrl({ toast, image ,imgUrl}))
+            loadingToast = toast.loading('uploading !')
+            let formData = new FormData()
+            formData.append('image', image);
+
+            dispatch(getImageUploadUrl({ toast, formData }))
         }
+        else return imgUrl
 
-        console.log(imgUrl,'====imgUrl-=====');
-        return imgUrl
     }
-
 
     return (
         <>
@@ -45,7 +54,7 @@ const BlogEditor = () => {
                     <div className='mx-auto max-w-[900px] w-full'>
                         <div className='relative aspect-video hover:opacity-80 bg-white border border-gray-100'>
                             <label htmlFor='uploadBanner'>
-                                <img src={defaultBanner} alt="" className='z-20' />
+                                <img ref={blogBannerRef} src={defaultBanner} alt="" className='z-20 h-full w-full object-contain' />
                                 <input type="file" id='uploadBanner' accept='.png, .jpg, .jpeg' hidden onChange={handleBannerUpload} />
                             </label>
                         </div>
