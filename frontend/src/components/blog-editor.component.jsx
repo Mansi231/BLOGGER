@@ -64,8 +64,8 @@ const BlogEditor = () => {
 
     const handlePublishEvent = () => {
         
-        // if(!banner.length) return toast.error('Upload a blog banner before publish it', { duration: 3000, id: 'bannerError' })
-        // if(!title.length) return toast.error('Write a blog title before publish it', { duration: 3000, id: 'titleError' })
+        if(!banner.length) return toast.error('Upload a blog banner before publish it', { duration: 3000, id: 'bannerError' })
+        if(!title.length) return toast.error('Write a blog title before publish it', { duration: 3000, id: 'titleError' })
         if (textEditor.isReady) {
             textEditor.save().then(data => {
                 console.log(data,'=====textEditor');
