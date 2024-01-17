@@ -1,38 +1,26 @@
-import React, { useContext, useEffect } from 'react'
-import { UserContext } from '../context/userAuth.context'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { ROUTES } from '../services/routes'
-import { getFromSession } from '../common/session'
-import { KEYS } from '../services/key'
+import React, { useContext, useEffect } from 'react';
+import { UserContext } from '../context/userAuth.context';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ROUTES } from '../services/routes';
 
 const Protected = ({ Component }) => {
+  const { userAuthDetail: { access_token } } = useContext(UserContext);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
-    const {userAuthDetail :{ access_token}} = useContext(UserContext)
-    const {pathname} = useLocation()
-    const navigate = useNavigate()
+  useEffect(() => {
+    const isAuthenticated = access_token !== null;
 
-    useEffect(()=>{
-        switch (pathname) {
-            case (ROUTES.SIGN_IN):
-                access_token == null ? navigate(ROUTES.SIGN_IN) : navigate(ROUTES.HOME)
-                break;
-            case (ROUTES.SIGN_UP):
-                access_token == null ? navigate(ROUTES.SIGN_UP) : navigate(ROUTES.HOME)
-                break;
-            case (ROUTES.EDITOR):
-                access_token == null ? navigate(ROUTES.SIGN_IN) : navigate(ROUTES.EDITOR)
-                break;
-        
-            default:
-                break;
-        }
-    },[pathname,access_token])
+    if (!isAuthenticated) {
+      // If not authenticated, redirect to the login page
+      navigate(ROUTES.SIGN_IN);
+    } else {
+      // If authenticated, proceed to the requested route
+      navigate(pathname);
+    }
+  }, [pathname, access_token, navigate]);
 
-    return (
-        <>
-            {Component}
-        </>
-    )
-}
+  return <>{Component}</>;
+};
 
-export default Protected
+export default Protected;

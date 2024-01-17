@@ -1,16 +1,15 @@
-// import {useDispatch} from 'react-redux'
-// import { getImageUploadUrl } from '../redux/slices/authSlice';
-// import {toast} from 'react-hot-toast'
+import { getImageUploadUrl } from '../redux/slices/authSlice';
+import { store } from '../redux/store/store';
+import { client } from '../services/client';
 
-// const UploadImage = (img) =>{
+const UploadImage = async (formData, toast) => {
 
-//     const dispatch = useDispatch()
+    let imageUrl = null
 
-//     let imgUrl = null;
+    let action = await store.dispatch(getImageUploadUrl({ toast, formData }))
+    if(typeof action.payload === 'string')imageUrl = action.payload
 
-//     dispatch(getImageUploadUrl(toast,imgUrl,img))
+    return imageUrl
+}
 
-//     return imgUrl
-// }
-
-// export {UploadImage}
+export { UploadImage }

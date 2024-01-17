@@ -2,9 +2,9 @@ import React from 'react'
 
 const PublishForm = () => {
   return (
-    <div>
-      
-    </div>
+    <h2>
+      Publish form
+    </h2>
   )
 }
 
