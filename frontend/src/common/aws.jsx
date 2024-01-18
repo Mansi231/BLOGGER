@@ -1,6 +1,5 @@
 import { getImageUploadUrl } from '../redux/slices/authSlice';
 import { store } from '../redux/store/store';
-import { client } from '../services/client';
 
 const UploadImage = async (formData, toast) => {
 

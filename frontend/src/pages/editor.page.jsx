@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useRef, useState } from 'react'
 import BlogEditor from '../components/blog-editor.component'
 import PublishForm from '../components/publish-form.component'
 
@@ -9,11 +9,13 @@ export const EditorContext = createContext({})
 const Editor = () => {
 
   const [editorState, setEditorState] = useState('editor')
-  const [textEditor, setTextEditor] = useState({isReady:false})
+
+  const textEditor  = useRef()
   const [blog, setBlog] = useState(blogStructure)
+  
 
   return (
-    <EditorContext.Provider value={{blog,setBlog,editorState,setEditorState,textEditor,setTextEditor,setEditorState}}>
+    <EditorContext.Provider value={{blog,setBlog,editorState,textEditor,setEditorState}}>
       {
         editorState == 'editor' ? <BlogEditor /> : <PublishForm />
       }

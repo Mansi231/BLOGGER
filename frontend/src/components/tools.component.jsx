@@ -26,7 +26,7 @@ const uploadImageByFile = async (e) => {
     let formData = new FormData()
     formData.append('image', e);
 
-    return UploadImage(formData,toast).then((url) =>( { success: 1, file: { url } }))
+    return UploadImage(formData, toast).then((url) => ({ success: 1, file: { url } }))
 
 }
 
@@ -45,7 +45,9 @@ export const tools = {
     header: {
         class: Header,
         config: {
-            placeholder: 'Type Heading..', levels: [2, 3], defaultLevel: 2
+            placeholder: 'Type Heading..',
+            levels: [2, 3],
+            defaultLevel: 2
         }
     },
     quote: {

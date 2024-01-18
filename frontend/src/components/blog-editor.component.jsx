@@ -1,31 +1,21 @@
-import React, { useContext, useEffect } from 'react'
+import React, { memo, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../services/routes'
 import logo from '../imgs/logo.png'
 import AnimationWrapper from '../common/page_animation'
 import defaultBanner from '../imgs/blog_banner.png'
-import { useDispatch, useSelector } from 'react-redux'
 import toast, { Toaster } from 'react-hot-toast';
 import { EditorContext } from '../pages/editor.page'
 import EditorJs from '@editorjs/editorjs'
 import { tools } from './tools.component'
 import { UploadImage } from '../common/aws'
+import useCustomEditor from '../custom_hooks/useCustomEditor'
 
 const BlogEditor = () => {
 
-    let { blog, blog: { title, des, tags, content, banner }, setBlog, textEditor, setTextEditor ,setEditorState} = useContext(EditorContext)
+    let { blog, blog: { title, des, tags, content, banner }, setBlog, textEditor, setEditorState } = useContext(EditorContext)
 
-    useEffect(() => {
-        let editor = () => { 
-            setTextEditor(new EditorJs({
-                holder: 'textEditor',
-                tools: tools,
-                data: '',
-                placeholder: "Let's write an awesome story"
-            }))
-        }
-        return () => editor()
-    }, [])
+    useCustomEditor();
 
     const handleBannerUpload = async (e) => {
         let image = e.target.files[0]
@@ -62,22 +52,20 @@ const BlogEditor = () => {
         img.src = defaultBanner
     }
 
-    const handlePublishEvent = () => {
-        
-        if(!banner.length) return toast.error('Upload a blog banner before publish it', { duration: 3000, id: 'bannerError' })
-        if(!title.length) return toast.error('Write a blog title before publish it', { duration: 3000, id: 'titleError' })
-        if (textEditor.isReady) {
-            textEditor.save().then(data => {
-                console.log(data,'=====textEditor');
-                if(data.blocks.length){
-                    setBlog({...blog,content:data})
-                    setEditorState('publish')
-                }
-                else{
-                    return toast.error('Write something in your blog to publish it', { duration: 3000, id: 'blockError' })
-                }
-             }).catch((err) => console.log(err, ': err in text editor saving'))
-        }
+    const handlePublishEvent = async () => {
+
+        // if(!banner.length) return toast.error('Upload a blog banner before publish it', { duration: 3000, id: 'bannerError' })
+        // if(!title.length) return toast.error('Write a blog title before publish it', { duration: 3000, id: 'titleError' })
+        textEditor?.current?.save().then((data) => {
+            if (data.blocks.length) {
+                setBlog({ ...blog, content: data })
+                setEditorState('publish')
+            }
+            else {
+                return toast.error('Write something in your blog to publish it', { duration: 3000, id: 'blockError' })
+            }
+        }).catch((err) => console.log(err, ': err in text editor saving'))
+
     }
 
     return (
@@ -110,13 +98,15 @@ const BlogEditor = () => {
                                 <input type="file" id='uploadBanner' accept='.png, .jpg, .jpeg' hidden onChange={handleBannerUpload} />
                             </label>
                         </div>
-                        <textarea placeholder='Blog Title' className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40' onKeyDown={handleTitleKeyDown} onChange={handleTitlechange}>
+                        <textarea defaultValue={title} placeholder='Blog Title' className=' text-4xl font-medium w-full h-16 outline-none resize-none mt-10 leading-tight placeholder:opacity-40' onKeyDown={handleTitleKeyDown} onChange={handleTitlechange}>
 
                         </textarea>
 
                         <hr className='w-full opacity-50 my-2' />
 
-                        <div id="textEditor" className='font-gelasio'></div>
+                        <div id="textEditor" className='font-gelasio'>
+                            
+                        </div>
                     </div>
                 </section>
             </AnimationWrapper>
@@ -124,4 +114,4 @@ const BlogEditor = () => {
     )
 }
 
-export default BlogEditor
+export default memo(BlogEditor)
