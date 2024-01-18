@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import mongoose from 'mongoose'
 import userRoutes from './routes/userRoutes.js'
+import blogRoutes from './routes/blogRoutes.js'
 import uploadUrlRoute from './routes/uploadUrlRoute.js'
 import cors from 'cors'; // Import the cors middleware
 import admin from 'firebase-admin'
@@ -18,6 +19,7 @@ server.use(express.urlencoded({
     }));
 server.use('/api/user',userRoutes)
 server.use('/api',uploadUrlRoute)
+server.use('/api/blog',blogRoutes)
 
 admin.initializeApp({credential: admin.credential.cert(serviceAccountKey)})
 

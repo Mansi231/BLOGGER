@@ -24,3 +24,13 @@ Content-Type: application/json
 {
    "img":"image to upload"
 }
+
+### create blog - post method
+POST http://localhost:3000/api/blog/create-blog
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1OWZhZDVlYzA1ZDYzMmRhNDYxMGFmNiIsImlhdCI6MTcwNTU1MTM1MCwiZXhwIjoxNzA4MTQzMzUwfQ._G1w0Rx9yWR95FRzvKDLwu8kHijiiSh5iHFcU2oCyuU
+
+
+{
+   "title":"image to upload"
+}

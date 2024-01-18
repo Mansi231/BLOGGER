@@ -1,4 +1,4 @@
-const { default: mongoose, Schema } = require("mongoose");
+import mongoose, { Schema } from 'mongoose'
 
 const blogSchema = mongoose.Schema({
     blog_id:{
