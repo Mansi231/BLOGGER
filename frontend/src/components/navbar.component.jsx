@@ -21,7 +21,7 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className='sticky border-b-2 border-gray-50 z-10 top-0 flex items-center w-full gap-12 px-[4vw] py-4 bg-white m-0'>
+            <nav className='sticky border-b-2 border-gray-100 z-10 top-0 flex items-center w-full gap-12 px-[4vw] py-4 bg-white m-0'>
                 <Link to={'/'} className='h-7 w-16 flex-none'>
                     <img src={logo} className='h-fit w-fit' />
                 </Link>

@@ -3,11 +3,17 @@ import AnimationWrapper from '../common/page_animation'
 import { Toaster, toast } from 'react-hot-toast'
 import { EditorContext } from '../pages/editor.page'
 import Tag from './tags.component'
+import { useDispatch } from 'react-redux'
+import { createBlog } from '../redux/slices/blogSlice'
+import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '../services/routes'
 
 const PublishForm = () => {
 
   let characterLimit = 200;
   let tagLimit = 10;
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const { setEditorState, blog: { title, des, tags, content, banner }, setBlog, blog } = useContext(EditorContext)
   const handleCloseEvent = () => { setEditorState('editor') }
@@ -41,6 +47,29 @@ const PublishForm = () => {
       }
       e.target.value = ''
     }
+  }
+
+  const handlePublishRes = (e,loadingToast) => {
+    e.target.classList.remove('disable')
+    toast.dismiss(loadingToast);
+    toast.success('Published! 👍')
+    navigate(ROUTES.HOME)
+  }
+
+  const publishBlog = async (e) => {
+    if (e.target.className.includes('disable')) return
+
+    if (!title?.length) return toast.error('Write a blog title before publishing', { id: 'titleError', duration: 2500 })
+    if (!des?.length || des?.length > characterLimit) return toast.error(`Write a description about your blog within ${characterLimit} characters to publish`, { id: 'desError', duration: 2500 })
+    if (!tags?.length) return toast.error(`Enter atleast 1 tag to rank your blog`, { id: 'tagError', duration: 2500 })
+
+    let loadingToast = toast.loading('Publishing...')
+    e.target.classList?.add('disable')
+
+    let blogObj = { title, des, tags, content, banner, draft: false }
+    await dispatch(createBlog({ blogObj, toast, handlePublishRes: handlePublishRes(e,loadingToast) }))
+
+
   }
 
   return (
@@ -80,7 +109,7 @@ const PublishForm = () => {
           </div>
           <p className='mt-1 mb-4 text-gray-400 text-right text-sm '>{tagLimit - tags?.length} Tags left</p>
 
-          <button className='btn-dark px-8'>Publish</button>
+          <button className='btn-dark px-8' onClick={publishBlog}>Publish</button>
         </div>
 
       </section>

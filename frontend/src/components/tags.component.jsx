@@ -3,7 +3,7 @@ import { EditorContext } from '../pages/editor.page'
 
 const Tag = ({ tag ,tagIndex}) => {
 
-    const {  blog: { title, des, tags, content, banner }, setBlog, blog } = useContext(EditorContext)
+    let {  blog: { title, des, tags, content, banner }, setBlog, blog } = useContext(EditorContext)
 
     const handleTagDelete = () =>{
         tags = tags.filter((t)=>t != tag)
@@ -23,7 +23,7 @@ const Tag = ({ tag ,tagIndex}) => {
     const addEditable= (e) =>{
         e.target.setAttribute('contentEditable',true)
         e.target.focus()
-    }
+    }   
 
     return (
         <div className='mt-2 mr-2 px-5 relative p-2 bg-white rounded-full inline-block hover:bg-opacity-50 hover:bg-white pr-10'>
