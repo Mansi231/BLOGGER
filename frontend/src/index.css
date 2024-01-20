@@ -76,4 +76,24 @@
     @apply block mx-auto
   }
 
+  .blog-title{
+      @apply text-xl font-medium leading-7 line-clamp-3 sm:line-clamp-2;
+  }
+
+  .blog-index{
+      @apply text-4xl sm:text-2xl lg:text-5xl font-bold text-gray-200 leading-none;
+  }
+
+  .tag{
+    @apply p-3 bg-gray-100 rounded-full px-6 capitalize;
+  }
+
+}
+
+.ce-block__content, .ce-toolbar__content{
+  max-width: 900px;
+}
+
+.cdx-settings-button[data-tune='withBorder'],.cdx-settings-button[data-tune='withBackground'],.cdx-settings-button[data-tune='stretched'] {
+display: none;
 }

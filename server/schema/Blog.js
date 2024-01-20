@@ -20,6 +20,10 @@ const blogSchema = mongoose.Schema({
     content:{
         type:[],
     },
+    tags: {
+        type: [String],
+        // required: true
+    },
     author:{
         type:Schema.Types.ObjectId,
         require:true,
