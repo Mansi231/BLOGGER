@@ -88,6 +88,22 @@
     @apply p-3 bg-gray-100 rounded-full px-6 capitalize;
   }
 
+  #textEditor h2, h2{
+    @apply font-inter text-4xl leading-normal font-bold max-md:text-3xl max-md:leading-snug !important;
+}
+
+  #textEditor h3, h3 {
+      @apply font-inter text-3xl leading-loose max-md:text-2xl max-md:leading-normal !important;
+  }
+
+  #textEditor *, .blog-page-content *{
+      @apply font-gelasio text-xl leading-10 md:text-2xl;
+  }
+
+  #textEditor a, .blog-page-content a{
+      @apply text-purple-300 underline hover:opacity-50;
+  }
+
 }
 
 .ce-block__content, .ce-toolbar__content{

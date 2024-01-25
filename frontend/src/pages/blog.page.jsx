@@ -10,6 +10,7 @@ import BlogInteraction from '../components/blog-interaction.component'
 import BlogPostCard from '../components/blog-post.component'
 import PageNotFound from './404.page'
 import toast, { Toaster } from 'react-hot-toast';
+import BlogContent from '../components/blog-content.component'
 
 export const blogStructure = { title: '', des: '', content: [], tags: [], author: { personal_info: { fullname: '', username: '', profile_img: '', bio: "'" } }, banner: '', publishedAt: '' }
 
@@ -83,6 +84,17 @@ const BlogPage = () => {
                                 <BlogInteraction />
 
                                 {/* Blog content */}
+                                <div className='my-12 font-gelasio blog-page-content'>
+                                    {
+                                        content[0].blocks.map((block,i)=>{
+                                            return (
+                                                <div key={i} className='my-4 md:my-8'>
+                                                    <BlogContent block={block}/>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </div>
 
                                 <BlogInteraction />
 
