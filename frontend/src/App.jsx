@@ -11,6 +11,7 @@ import HomePage from './pages/home.page'
 import SearchPage from './pages/search.page'
 import PageNotFound from './pages/404.page'
 import ProfilePage from './pages/profile.page'
+import BlogPage from './pages/blog.page'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
           <Route element={<Protected Component={<UserAuthForm type={'sign-up'} />}/>} path={ROUTES.SIGN_UP} />
           <Route element={<SearchPage/>} path={ROUTES.SEARCH} />
           <Route element={<ProfilePage/>} path={ROUTES.USER} />
+          <Route element={<BlogPage/>} path={ROUTES.BLOG} />
           <Route path='*' element={<PageNotFound/>}/>
         </Route>
       </Routes>

@@ -8,7 +8,7 @@ const BlogPostCard = ({ content, author }) => {
     let { fullname, username, profile_img } = author
 
     return (
-        <Link to={`blog/${id}`} className='flex gap-8 items-center border-b border-gray-200 mb-4 pb-5'>
+        <Link to={`/blog/${id}`} className='flex gap-8 items-center border-b border-gray-200 mb-4 pb-5'>
             <div className='w-full'>
                 <div className='flex items-center gap-2 mb-7'>
                     <img src={profile_img} className='w-6 h-6 rounded-full' />

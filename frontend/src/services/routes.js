@@ -5,6 +5,7 @@ export const ROUTES = {
     NOTIFICATION:'/dashboard/notification',
     EDITOR:'/editor',
     DASHBOARD_BLOGS:'/dashboard/blogs',
-    SEARCH:'search/:query',
-    USER:'user/:id'
+    SEARCH:'/search/:query',
+    USER:'/user/:id',
+    BLOG:'/blog/:blog_id'
 }

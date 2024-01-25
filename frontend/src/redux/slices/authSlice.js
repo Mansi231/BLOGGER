@@ -4,7 +4,9 @@ import { storeInSession } from '../../common/session';
 import { KEYS } from '../../services/key';
 
 export const showErr = (toast, err, id) => {
-    if (err?.response?.data?.error) toast.error(err?.response?.data?.error, { duration: 3000, id })
+
+    if (err?.response?.data?.error)return toast.error(err?.response?.data?.error, { duration: 3000, id })
+    
     throw new Error(err?.response?.data?.error)
 }
 

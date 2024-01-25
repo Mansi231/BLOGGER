@@ -1,5 +1,5 @@
 import express from 'express'
-import { createBlog, getLatestBlogs, getSearchBlogs, getSearchUsers, getTrendingBlogs, getUserProfile } from '../controller/blogController.js'
+import { createBlog, getBlog, getLatestBlogs, getSearchBlogs, getSearchUsers, getTrendingBlogs, getUserProfile } from '../controller/blogController.js'
 import { verifyJWT } from '../middlewares/authMiddleware.js'
 
 const router = express.Router()
@@ -10,5 +10,6 @@ router.get('/trending-blog',getTrendingBlogs)
 router.post('/search-blogs',getSearchBlogs)
 router.post('/search-users',getSearchUsers)
 router.post('/get-profile',getUserProfile)
+router.post('/get-blog',getBlog)
 
 export default router

@@ -56,10 +56,18 @@ Content-Type: application/json
    "query":"sarika"
 }
 
-### get user profile - get method
+### get user profile - POST method
 POST http://localhost:3000/api/blog/get-profile
 Content-Type: application/json
 
 {
    "username":"sarikagabani"
+}
+
+### get blog by blog_id - post method
+POST http://localhost:3000/api/blog/get-blog
+Content-Type: application/json
+
+{
+   "blog_id":"A-Dog-Friendly-Retreat-Exploring-Zion-National-ParkwxTUemGMKNeFVnkOrahnC"
 }
