@@ -12,8 +12,8 @@ export const createBlog = createAsyncThunk('createBlog', async ({ blogObj, toast
     })
 })
 
-export const getLatestBlogs = createAsyncThunk('getLatestBlogs', async ({ toast }) => {
-    return client.get(`blog/latest-blog`).then((res) => res.data.data).catch(error => {return error })
+export const getLatestBlogs = createAsyncThunk('getLatestBlogs', async ({ toast ,page}) => {
+    return client.post(`blog/latest-blog`,{page}).then((res) => res.data).catch(error => {return error })
 })
 
 export const getTrendingBlogs = createAsyncThunk('getTrendingBlogs', async ({ toast }) => {
@@ -21,21 +21,26 @@ export const getTrendingBlogs = createAsyncThunk('getTrendingBlogs', async ({ to
 })
 
 export const getSearchBlogsByCategory = createAsyncThunk('getSearchBlogsByCategory', async (tag) => {
-    return client.post(`blog/search-blogs`,tag).then((res) => res.data.data).catch(error => {return error })
+    return client.post(`blog/search-blogs`,tag).then((res) => res.data).catch(error => {return error })
+})
+
+export const getSearchUsers = createAsyncThunk('getSearchUsers', async (query) => {
+    return client.post(`blog/search-users`,query).then((res) => res.data.data).catch(error => {return error })
+})
+
+export const getUserProfile = createAsyncThunk('getUserProfile', async (username) => {
+    return client.post(`blog/get-profile`,username).then((res) => res.data.data).catch(error => {return error })
 })
 
 export const blogSlice = createSlice({
     name: 'blog',
-    initialState: { latestBlogs: [],isError:null , trendingBlogs:[] ,searchBlogs:[]},
+    initialState: { latestBlogs: {},isError:null , trendingBlogs:[] ,searchBlogs:{},users:[],userProfile:{}},
     extraReducers: (builder) => {
         builder.addCase(getLatestBlogs.pending, (state, action) => {})
         .addCase(getLatestBlogs.fulfilled, (state, action) => {
-           
-           
             state.latestBlogs = action.payload
         })
         .addCase(getLatestBlogs.rejected, (state, action) => {
-          
             state.isError = action.payload
         })
         .addCase(getTrendingBlogs.fulfilled, (state, action) => {
@@ -45,6 +50,12 @@ export const blogSlice = createSlice({
         .addCase(getSearchBlogsByCategory.fulfilled, (state, action) => {
           
             state.searchBlogs = action.payload
+        })
+        .addCase(getSearchUsers.fulfilled, (state, action) => {
+            state.users = action.payload
+        })
+        .addCase(getUserProfile.fulfilled, (state, action) => {
+            state.userProfile = action.payload
         })
     }
 })

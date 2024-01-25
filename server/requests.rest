@@ -47,3 +47,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YWE1M2QzY
 {
    "tag":"space"
 }
+
+### get users by serach - post method
+POST http://localhost:3000/api/blog/search-users
+Content-Type: application/json
+
+{
+   "query":"sarika"
+}
+
+### get user profile - get method
+POST http://localhost:3000/api/blog/get-profile
+Content-Type: application/json
+
+{
+   "username":"sarikagabani"
+}

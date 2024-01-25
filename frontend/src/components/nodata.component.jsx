@@ -1,11 +1,11 @@
 import React from 'react'
 
-const NoData = () => {
+const NoDataMessage = ({message}) => {
   return (
-    <div>
-      
+    <div className='text-center w-full p-4 rounded-full bg-gray-200/50 mt-4'>
+      <p>{message}</p>
     </div>
   )
 }
 
-export default NoData
+export default NoDataMessage

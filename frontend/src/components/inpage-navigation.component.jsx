@@ -27,7 +27,7 @@ const InPageNavigation = ({ routes, defaultActiveIndex = 0, defaultHidden = [], 
                 {
                     routes?.map((route, i) => {
                         return (
-                            <button ref={i == defaultActiveIndex ? activeTabRef : null} key={i} className={`p-4 px-5 capitalize ${inPageNavIndex == i ? 'text-black' : 'text-gray-400'} ${defaultHidden.includes(route) ? 'md:hidden' : ''}`} onClick={(e) => changePageState(e.target, i)}>{route}</button>
+                            <button ref={i == defaultActiveIndex ? activeTabRef : null} key={i} className={`p-4 md:text-lg text-sm px-5 capitalize ${inPageNavIndex == i ? 'text-black' : 'text-gray-400'} ${defaultHidden.includes(route) ? 'md:hidden' : ''}`} onClick={(e) => changePageState(e.target, i)}>{route}</button>
                         )
                     })
                 }

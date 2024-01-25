@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import logo from '../imgs/logo.png'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../services/routes'
 import { UserContext } from '../context/userAuth.context'
 import UserNavigationPanel from './user-navigation.component'
@@ -10,6 +10,7 @@ const Navbar = () => {
     const [userNavPanel, setUserNavPanel] = useState(false)
 
     const { userAuthDetail, setUserAuthDetail } = useContext(UserContext)
+    const navigate = useNavigate()
 
     const handleUserNavPanel = () =>{
         setUserNavPanel((currentVal)=>!currentVal)
@@ -17,6 +18,15 @@ const Navbar = () => {
 
     const handleBlur = () =>{
         setTimeout(()=>{setUserNavPanel((currentVal)=>false)},200)
+    }
+    const handleSearch = (e) =>{
+        let query = e.target.value;
+        if(e.keyCode == 13 && query?.length){
+            navigate(`/search/${query}`)
+        }
+        else{
+            
+        }
     }
 
     return (
@@ -27,7 +37,7 @@ const Navbar = () => {
                 </Link>
 
                 <div className={`bg-white absolute  w-full left-0 top-full mt-0.5 py-4 px-[5vw] md:border-0 md:inset-0 md:block md:relative md:p-0 md:w-auto md:show ${searchBoxVisibility ? 'show' : 'hide'}`}>
-                    <input type="text" placeholder='search' className='w-full md:w-auto bg-gray-100 p-3 pl-6 pr-[12%] md:pr-6 rounded-full placeholder:text-gray-300 md:pl-12' />
+                    <input onKeyDown={handleSearch} type="text" placeholder='search' className='w-full md:w-auto bg-gray-100 p-3 pl-6 pr-[12%] md:pr-6 rounded-full placeholder:text-gray-300 md:pl-12' />
                     <i className="fi fi-rr-search absolute right-[10%] md:left-5 md:pointer-events-none -translate-y-1/2 top-1/2 text-black text-xl"></i>
                 </div>
 

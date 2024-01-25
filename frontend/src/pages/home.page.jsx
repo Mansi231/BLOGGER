@@ -8,6 +8,9 @@ import { store } from '../redux/store/store'
 import Loader from '../components/loader.component'
 import BlogPostCard from '../components/blog-post.component'
 import MinimalBlogPost from '../components/nobanner-blog-post.component'
+import NoDataMessage from '../components/nodata.component'
+import LoadMoreDataBtn from '../components/load-more.component'
+import { filterPaginationData } from '../common/filter-pagination-data'
 
 const HomePage = () => {
 
@@ -19,12 +22,12 @@ const HomePage = () => {
 
   const dispatch = useDispatch()
 
-  const fetchLatestBlog = async () => {
+  const fetchLatestBlog = async ({page=1}) => {
     try {
-      await dispatch(getLatestBlogs({ toast }));
+      await dispatch(getLatestBlogs({ toast ,page}));
       let { blog } = store.getState();
-
-      if (blog?.latestBlogs) setBlogs(() => blog?.latestBlogs)
+      let formatedData = await filterPaginationData( {state:blogs, page ,...blog?.latestBlogs})      
+      if (blog?.latestBlogs?.data) setBlogs(() =>formatedData)
     } catch (error) {
       console.error('Error fetching latest blogs:', error);
     }
@@ -41,12 +44,12 @@ const HomePage = () => {
     }
   }
 
-  const fetchBlogsByCategory = async () => {
+  const fetchBlogsByCategory = async ({page=1}) => {
     try {
-      await dispatch(getSearchBlogsByCategory({ tag:pageState }));
+      await dispatch(getSearchBlogsByCategory({ tag: pageState ,page}));
       let { blog } = store.getState();
-
-      if (blog?.searchBlogs) setBlogs(() => blog?.searchBlogs)
+      let formatedData = await filterPaginationData( {state:blogs, page ,...blog?.searchBlogs})
+      if (blog?.searchBlogs?.data) setBlogs(() => formatedData)
     } catch (error) {
       console.error('Error fetching latest blogs:', error);
     }
@@ -64,9 +67,9 @@ const HomePage = () => {
 
   useEffect(() => {
     activeTabRef.current.click()
-    if (pageState == 'home') fetchLatestBlog();
+    if (pageState == 'home') fetchLatestBlog({page:1});
     else {
-      fetchBlogsByCategory()
+      fetchBlogsByCategory({page:1})
     }
     if (!trendingBlogs) fetchTrendingBlogs()
 
@@ -82,24 +85,27 @@ const HomePage = () => {
             <>
               {/* latest blogs */}
               {
-                blogs === null ? <Loader /> :
-                  blogs?.map((blog, i) => {
+                blogs?.results === null ? <Loader /> :
+                  blogs?.results?.length ? blogs?.results?.map((blog, i) => {
                     return <AnimationWrapper transition={{ duration: 1, delay: i * .1 }} key={i}>
                       <BlogPostCard content={blog} author={blog?.author?.personal_info} />
                     </AnimationWrapper>
-                  })
+                  }) : <NoDataMessage message={'No blogs published'} />
               }
+              <LoadMoreDataBtn state={blogs} fetchDataFun={pageState == 'home' ? fetchLatestBlog : fetchBlogsByCategory}/>
             </>
 
             {/* trending blogs */}
             {
               trendingBlogs === null ? <Loader /> :
-                trendingBlogs?.map((blog, i) => {
-                  return <AnimationWrapper transition={{ duration: 1, delay: i * .1 }} key={i}>
-                    <MinimalBlogPost blog={blog} index={i} />
-                  </AnimationWrapper>
+                trendingBlogs?.length ?
+                  trendingBlogs?.map((blog, i) => {
+                    return <AnimationWrapper transition={{ duration: 1, delay: i * .1 }} key={i}>
+                      <MinimalBlogPost blog={blog} index={i} />
+                    </AnimationWrapper>
 
-                })
+                  }) :
+                  <NoDataMessage message={'No blogs published'} />
             }
 
           </InPageNavigation>
@@ -126,12 +132,14 @@ const HomePage = () => {
               {/* trending blogs */}
               {
                 trendingBlogs === null ? <Loader /> :
-                  trendingBlogs?.map((blog, i) => {
-                    return <AnimationWrapper transition={{ duration: 1, delay: i * .1 }} key={i}>
-                      <MinimalBlogPost blog={blog} index={i} />
-                    </AnimationWrapper>
+                  trendingBlogs?.length ?
+                    trendingBlogs?.map((blog, i) => {
+                      return <AnimationWrapper transition={{ duration: 1, delay: i * .1 }} key={i}>
+                        <MinimalBlogPost blog={blog} index={i} />
+                      </AnimationWrapper>
 
-                  })
+                    }) :
+                    <NoDataMessage message={'No blogs published'} />
               }
             </div>
           </div>

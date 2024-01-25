@@ -29,16 +29,23 @@ const createBlog = asyncHandler(async (req, res) => {
                 return res.status(200).json({ id: blog_id })
             }).catch(error => res.status(500).json({ error }))
 
-    }).catch(error => res.status(500).json({ error :error?.message}))
+    }).catch(error => res.status(500).json({ error: error?.message }))
 })
 
 const getLatestBlogs = asyncHandler(async (req, res) => {
+    let { page } = req?.body
     let maxLimit = 5
-    Blog.find({ draft: false }).populate('author', 'personal_info.fullname personal_info.profile_img personal_info.username -_id').sort({ 'publishedAt': -1 }).select('blog_id title banner des activity tags publishedAt -_id').limit(maxLimit).then((data) => {
-        return res.status(200).json({ data })
+
+    Blog.countDocuments({ draft: false }).then((totalDocs) => {
+        Blog.find({ draft: false }).populate('author', 'personal_info.fullname personal_info.profile_img personal_info.username -_id').sort({ 'publishedAt': -1 }).select('blog_id title banner des activity tags publishedAt -_id').skip((page - 1) * maxLimit).limit(maxLimit).then((data) => {
+            return res.status(200).json({ data, totalDocs })
+        }).catch(error => {
+            return res.status(500).json({ error: error?.message })
+        })
     }).catch(error => {
-        return res.status(500).json({ error :error?.message })
+        return res.status(500).json({ error: error?.message })
     })
+
 })
 
 const getTrendingBlogs = asyncHandler(async (req, res) => {
@@ -46,15 +53,42 @@ const getTrendingBlogs = asyncHandler(async (req, res) => {
 })
 
 const getSearchBlogs = asyncHandler(async (req, res) => {
-    let maxLimit = 5
-    let { tag } = req?.body
-    let findQuery = { tags: tag, draft: false }
+    let maxLimit = 2
+    let { tag,query ,page} = req?.body
+    
+    let findQuery;
+    if(tag){findQuery = { tags: tag, draft: false }}
+    else if(query){findQuery = { title: new RegExp(query,'i'), draft: false }}
 
-    Blog.find(findQuery).populate('author','personal_info.username personal_info.fullname personal_info.profile_img -_id').sort({ 'publishedAt': -1 }).select('blog_id title banner des activity tags publishedAt -_id').limit(maxLimit).then((data) => {
-        return res.status(200).json({ data })
+    Blog.countDocuments(findQuery).then((totalDocs) => {
+        Blog.find(findQuery).populate('author', 'personal_info.username personal_info.fullname personal_info.profile_img -_id').sort({ 'publishedAt': -1 }).select('blog_id title banner des activity tags publishedAt -_id').skip((page-1)*maxLimit).limit(maxLimit).then((data) => {
+            return res.status(200).json({ data, totalDocs })
+        }).catch(error => {
+            return res.status(500).json({ error: error?.message })
+        })
     }).catch(error => {
-        return res.status(500).json({ error :error?.message})
+        return res.status(500).json({ error: error?.message })
+    })
+
+})
+
+const getSearchUsers = asyncHandler(async (req,res)=>{
+    let {query} = req?.body
+    User.find({'personal_info.username': new RegExp(query,'i')}).limit(50).select('personal_info.fullname personal_info.username personal_info.profile_img -_id').then((data)=>{
+        return res.status(200).json({data})
+    }).catch((error)=>{
+        return res.status(500).json({error:error?.message})
     })
 })
 
-export { createBlog, getLatestBlogs, getTrendingBlogs, getSearchBlogs }
+const getUserProfile = asyncHandler(async (req,res)=>{
+    let {username} = req?.body
+
+    User.findOne({'personal_info.username': username}).select('-personal_info.password -google_auth -updatedAt -blogs').then((data)=>{
+        return res.status(200).json({data})
+    }).catch((error)=>{
+        return res.status(500).json({error:error?.message})
+    })
+})
+
+export { createBlog, getLatestBlogs, getTrendingBlogs, getSearchBlogs , getSearchUsers ,getUserProfile}

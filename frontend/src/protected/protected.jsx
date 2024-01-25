@@ -15,6 +15,7 @@ const Protected = ({ Component }) => {
       // If not authenticated, redirect to the login page
       navigate(ROUTES.SIGN_IN);
     } else {
+      if(pathname == ROUTES.SIGN_IN || pathname == ROUTES.SIGN_UP) return navigate(ROUTES.HOME)
       // If authenticated, proceed to the requested route
       navigate(pathname);
     }

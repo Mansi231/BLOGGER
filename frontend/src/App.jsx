@@ -8,6 +8,9 @@ import UserAuthContext from './context/userAuth.context'
 import Protected from './protected/protected'
 import Editor from './pages/editor.page'
 import HomePage from './pages/home.page'
+import SearchPage from './pages/search.page'
+import PageNotFound from './pages/404.page'
+import ProfilePage from './pages/profile.page'
 
 function App() {
 
@@ -19,6 +22,9 @@ function App() {
           <Route element={<Protected Component={<HomePage/>}/>} index />
           <Route element={<Protected Component={<UserAuthForm type={'sign-in'} />}/>} path={ROUTES.SIGN_IN} />
           <Route element={<Protected Component={<UserAuthForm type={'sign-up'} />}/>} path={ROUTES.SIGN_UP} />
+          <Route element={<SearchPage/>} path={ROUTES.SEARCH} />
+          <Route element={<ProfilePage/>} path={ROUTES.USER} />
+          <Route path='*' element={<PageNotFound/>}/>
         </Route>
       </Routes>
     </UserAuthContext>
