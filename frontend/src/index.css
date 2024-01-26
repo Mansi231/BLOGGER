@@ -101,7 +101,7 @@
   }
 
   #textEditor a, .blog-page-content a{
-      @apply text-purple-300 underline hover:opacity-50;
+      @apply text-purple-400 underline hover:opacity-50;
   }
 
 }

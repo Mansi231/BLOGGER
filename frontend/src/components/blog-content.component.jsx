@@ -4,7 +4,7 @@ const Image = ({ url, caption }) => {
     return (
         <div className='w-full flex flex-col justify-center items-center md:items-start'>
             <img src={url} alt="" className='' />
-            {caption?.length > 0 && <p className='w-full md:text-start text-center my-3 md:mb-12 text-base text-gray-400'>{caption}</p>}
+            {caption?.length > 0 && <p className='w-full text-start md:text-center my-3 md:mb-12 text-base text-gray-400'>{caption}</p>}
         </div>
     )
 }
@@ -35,7 +35,7 @@ const BlogContent = ({ block }) => {
     let { type, data } = block
 
     if (type == 'paragraph') {
-        return <p className='' dangerouslySetInnerHTML={{ __html: data?.text }}></p>
+        return <p className='text-lg' dangerouslySetInnerHTML={{ __html: data?.text }}></p>
     }
 
     if (type == 'header') {

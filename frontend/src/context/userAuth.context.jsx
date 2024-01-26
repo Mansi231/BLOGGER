@@ -13,6 +13,7 @@ const UserAuthContext = ({children}) => {
         userSession ? setUserAuthDetail(JSON.parse(userSession)) : setUserAuthDetail({access_token:null})
     },[])
 
+
   return (
     <UserContext.Provider value={{userAuthDetail,setUserAuthDetail}}>
       {children}

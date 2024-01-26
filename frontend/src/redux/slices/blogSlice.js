@@ -39,9 +39,28 @@ export const getBlog = createAsyncThunk('getBlog', async ({blog_id,toast}) => {
     })
 })
 
+// like blog
+
+export const likeBlog = createAsyncThunk('likeBlog', async ({obj, toast}) => {
+    return client.post(`blog/like-blog`, obj).then((res) => res.data).catch(error => {
+        showErr(toast, error, 'likeBlogErr')
+        return null
+    })
+})
+
+// is blog liked by user 
+
+export const isBlogLikedByUser = createAsyncThunk('isBlogLikedByUser', async ({obj, toast}) => {
+    return client.post(`blog/isliked-by-user`, obj).then((res) => res.data?.result
+    ).catch(error => {
+        showErr(toast, error, 'likeBlogErr')
+        return null
+    })
+})
+
 export const blogSlice = createSlice({
     name: 'blog',
-    initialState: { latestBlogs: {}, isError: null, trendingBlogs: [], searchBlogs: {}, users: [], userProfile: {}, blog: {} },
+    initialState: { latestBlogs: {}, isError: null, trendingBlogs: [], searchBlogs: {}, users: [], userProfile: {}, blog: {} ,isLikedBlog:null},
     extraReducers: (builder) => {
         builder.addCase(getLatestBlogs.pending, (state, action) => { })
             .addCase(getLatestBlogs.fulfilled, (state, action) => {
@@ -66,6 +85,9 @@ export const blogSlice = createSlice({
             })
             .addCase(getBlog.fulfilled, (state, action) => {
                 state.blog = action.payload
+            })
+            .addCase(isBlogLikedByUser.fulfilled, (state, action) => {
+                state.isLikedBlog = action.payload
             })
     }
 })

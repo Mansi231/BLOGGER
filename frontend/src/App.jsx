@@ -18,15 +18,16 @@ function App() {
   return (
     <UserAuthContext>
       <Routes>
-        <Route path={ROUTES.EDITOR} element={<Protected Component={<Editor/>}/>}/>
-        <Route element={<Protected Component={<Navbar />}/>} path={ROUTES.HOME}>
-          <Route element={<Protected Component={<HomePage/>}/>} index />
-          <Route element={<Protected Component={<UserAuthForm type={'sign-in'} />}/>} path={ROUTES.SIGN_IN} />
-          <Route element={<Protected Component={<UserAuthForm type={'sign-up'} />}/>} path={ROUTES.SIGN_UP} />
-          <Route element={<SearchPage/>} path={ROUTES.SEARCH} />
-          <Route element={<ProfilePage/>} path={ROUTES.USER} />
-          <Route element={<BlogPage/>} path={ROUTES.BLOG} />
-          <Route path='*' element={<PageNotFound/>}/>
+        <Route path={ROUTES.EDITOR} element={<Protected Component={<Editor />} />} />
+        <Route path={ROUTES.EDITOR_BLOG} element={<Protected Component={<Editor />} />} />
+        <Route element={<Navbar />} path={ROUTES.HOME}>
+          <Route element={<HomePage />} index />
+          <Route element={<Protected Component={<UserAuthForm type={'sign-in'} />} />} path={ROUTES.SIGN_IN} />
+          <Route element={<Protected Component={<UserAuthForm type={'sign-up'} />} />} path={ROUTES.SIGN_UP} />
+          <Route element={<SearchPage />} path={ROUTES.SEARCH} />
+          <Route element={<ProfilePage />} path={ROUTES.USER} />
+          <Route element={<BlogPage />} path={ROUTES.BLOG} />
+          <Route path='*' element={<PageNotFound />} />
         </Route>
       </Routes>
     </UserAuthContext>

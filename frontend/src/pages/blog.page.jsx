@@ -24,7 +24,10 @@ const BlogPage = () => {
     const [blog, setBlog] = useState(blogStructure)
     const [similarBlogs, setSimilarBlogs] = useState(null)
     const [loading, setLoading] = useState(true)
-
+    const [isLikedByUser,setLikedByUser] = useState(false)
+    const [commentsWrapper,setCommentsWrapper] = useState(true)
+    const [totalParentCommentsLoaded,setTotalParentCommentsLoaded] = useState(0)
+    
     let { title, content, banner, author: { personal_info: { fullname, username: author_username, profile_img } }, publishedAt } = blog
 
     const fetchBlog = async () => {
@@ -53,8 +56,10 @@ const BlogPage = () => {
         setBlog(blogStructure)
         setSimilarBlogs(null)
         setLoading(true)
+        setLikedByUser(false)
+        setCommentsWrapper(false)
+        setTotalParentCommentsLoaded(0)
     }
-
 
     return (
         <AnimationWrapper>
@@ -62,7 +67,8 @@ const BlogPage = () => {
             {
                 loading ? <Loader /> :
                 author_username?.length ?
-                        <BlogContext.Provider value={{ blog, setBlog }}>
+                        <BlogContext.Provider value={{ blog, setBlog , isLikedByUser,setLikedByUser ,commentsWrapper,setCommentsWrapper,totalParentCommentsLoaded,setTotalParentCommentsLoaded}}>
+                            <CommentsContainer/>
                             <div className='max-w-[900px] center py-10 max-lg:px-[5vw]'>
                                 <img src={banner} alt="" className='aspect-video' />
                                 <div className='mt-12'>

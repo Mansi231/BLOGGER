@@ -5,7 +5,7 @@ import { EditorContext } from '../pages/editor.page'
 import Tag from './tags.component'
 import { useDispatch } from 'react-redux'
 import { createBlog } from '../redux/slices/blogSlice'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ROUTES } from '../services/routes'
 
 const PublishForm = () => {
@@ -16,6 +16,7 @@ const PublishForm = () => {
   const navigate = useNavigate()
 
   const { setEditorState, blog: { title, des, tags, content, banner }, setBlog, blog } = useContext(EditorContext)
+  let { blog_id } = useParams()
   const handleCloseEvent = () => { setEditorState('editor') }
 
   const handleBlogTitleChange = (e) => {
@@ -66,9 +67,8 @@ const PublishForm = () => {
     let loadingToast = toast.loading('Publishing...')
     e.target.classList?.add('disable')
 
-    let blogObj = { title, des, tags, content, banner, draft: false }
+    let blogObj = { title, des, tags, content, banner, draft: false ,id:blog_id}
     await dispatch(createBlog({ blogObj, toast, handlePublishRes: handlePublishRes(e,loadingToast) }))
-
 
   }
 

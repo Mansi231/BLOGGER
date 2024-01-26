@@ -12,7 +12,7 @@ const useCustomEditor = () => {
         const editorInstance = new EditorJs({
             holder: 'textEditor',
             tools: tools,
-            data: content,
+            data:Array.isArray(content)? content[0] : content,
             placeholder: "Let's write an awesome story",
             onReady: () => {
                 textEditor.current = editorInstance

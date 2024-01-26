@@ -3,6 +3,7 @@ import { ValidateBlog } from '../validator/validator.js'
 import { nanoid } from 'nanoid'
 import Blog from '../schema/Blog.js'
 import User from '../schema/User.js'
+import Notification from '../schema/Notification.js'
 
 const createBlog = asyncHandler(async (req, res) => {
     let authorId = req?.user?._id
@@ -10,26 +11,32 @@ const createBlog = asyncHandler(async (req, res) => {
 
     if (error) return res.status(403).json({ error: error.details.map(({ message }) => message), value })
 
-    let { title, des, tags, content, banner, draft } = req?.body
+    let { title, des, tags, content, banner, draft, id } = req?.body
     tags = tags?.map(tag => tag.toLowerCase())
 
-    let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-').trim() + nanoid()
+    let blog_id = id || title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-').trim() + nanoid()
 
-    let blog = new Blog({
-        title, des: des || '', content, banner, tags: tags || [], author: authorId, blog_id, draft: Boolean(draft)
-    })
+    if (id) {
+        Blog.findOneAndUpdate({ blog_id }, { title, des, banner, content, tags, draft: draft ? draft : false }).then((blog) => {
+            return res.status(200).json({ id: blog_id })
+        }).catch(error => res.status(500).json({ error: error?.message }))
+    }
+    else {
+        let blog = new Blog({
+            title, des: des || '', content, banner, tags: tags || [], author: authorId, blog_id, draft: Boolean(draft)
+        })
+        blog.save().then((blog) => {
+            let incrementPost = Boolean(draft) ? 0 : 1
+            User.findOneAndUpdate({ _id: authorId },
+                {
+                    $inc: { 'account_info.total_posts': incrementPost },
+                    $push: { 'blogs': blog?._id }
+                }).then(user => {
+                    return res.status(200).json({ id: blog_id })
+                }).catch(error => res.status(500).json({ error }))
 
-    blog.save().then((blog) => {
-        let incrementPost = Boolean(draft) ? 0 : 1
-        User.findOneAndUpdate({ _id: authorId },
-            {
-                $inc: { 'account_info.total_posts': incrementPost },
-                $push: { 'blogs': blog?._id }
-            }).then(user => {
-                return res.status(200).json({ id: blog_id })
-            }).catch(error => res.status(500).json({ error }))
-
-    }).catch(error => res.status(500).json({ error: error?.message }))
+        }).catch(error => res.status(500).json({ error: error?.message }))
+    }
 })
 
 const getLatestBlogs = asyncHandler(async (req, res) => {
@@ -53,11 +60,11 @@ const getTrendingBlogs = asyncHandler(async (req, res) => {
 })
 
 const getSearchBlogs = asyncHandler(async (req, res) => {
-    let { author, tag, query, page ,limit , eliminate_blog} = req?.body
+    let { author, tag, query, page, limit, eliminate_blog } = req?.body
     let maxLimit = limit || 2
 
     let findQuery;
-    if (tag) { findQuery = { tags: tag, draft: false,blog_id :{$ne :eliminate_blog}} }
+    if (tag) { findQuery = { tags: tag, draft: false, blog_id: { $ne: eliminate_blog } } }
     else if (query) { findQuery = { title: new RegExp(query, 'i'), draft: false } }
     else if (author) { findQuery = { author, draft: false } }
 
@@ -93,8 +100,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
 })
 
 const getBlog = asyncHandler(async (req, res) => {
-    let { blog_id } = req?.body
-    let incrementVal = 1;
+    let { blog_id, draft, mode } = req?.body
+    let incrementVal = mode != 'edit' ? 1 : 0;
+
     Blog.findOneAndUpdate({ blog_id }, { $inc: { 'activity.total_reads': incrementVal } })
         .populate('author', 'personal_info.fullname personal_info.username personal_info.profile_img')
         .select('title des content banner activity publishedAt blog_id tags')
@@ -103,7 +111,7 @@ const getBlog = asyncHandler(async (req, res) => {
             User.findOneAndUpdate({ 'personal_info.username': data.author.personal_info?.username }, { $inc: { 'account_info.total_reads': incrementVal } }).catch((error) => {
                 return res.status(500).json({ error: error?.message })
             })
-
+            if (data.draft && !draft) return res.status(500).json({ error: 'You can not access draft blog' })
             return res.status(200).json({ data })
 
         }).catch((error) => {
@@ -111,4 +119,54 @@ const getBlog = asyncHandler(async (req, res) => {
         })
 })
 
-export { createBlog, getLatestBlogs, getTrendingBlogs, getSearchBlogs, getSearchUsers, getUserProfile, getBlog }
+// Like Blog
+
+const likeBlog = asyncHandler(async (req, res) => {
+
+    let user_id = req?.user?._id
+    let { _id, isLikedByUser } = req?.body
+    let incrementVal = !isLikedByUser ? 1 : -1;
+
+    Blog.findOneAndUpdate({ _id }, { $inc: { 'activity.total_likes': incrementVal } })
+        .populate('author', 'personal_info.fullname personal_info.username personal_info.profile_img')
+        .select('title des content banner activity publishedAt blog_id tags')
+        .then((data) => {
+            if (!isLikedByUser) {
+                let like = new Notification({
+                    type: 'like', blog: _id, notification_for: data?.author, user: user_id
+                })
+
+                like.save().then((likeNotification) => {
+                    return res.status(200).json({ liked_by_user: true })
+                }).catch((error) => {
+                    return res.status(500).json({ error: error?.message })
+                })
+            }
+            else {
+                Notification.findOneAndDelete({ user: user_id, type: 'like', blog: _id }).then((likeNotification) => {
+                    return res.status(200).json({ liked_by_user: false })
+                }).catch((error) => {
+                    return res.status(500).json({ error: error?.message })
+                })
+            }
+
+        }).catch((error) => {
+            return res.status(500).json({ error: error?.message })
+        })
+})
+
+// is blog liked by logged in user
+
+const isBlogLikedByUser = asyncHandler(async (req, res) => {
+    let user = req?.user?._id
+    let { _id } = req?.body
+
+    Notification.exists({ user, blog: _id, type: 'like' }).then((result) => {
+        return res.status(200).json({ result })
+    }).catch((error) => {
+        return res.status(500).json({ error: error?.message })
+    })
+
+})
+
+export { createBlog, getLatestBlogs, getTrendingBlogs, getSearchBlogs, getSearchUsers, getUserProfile, getBlog, likeBlog, isBlogLikedByUser }

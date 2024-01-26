@@ -1,21 +1,61 @@
-import React, { useContext } from 'react'
+import React, { memo, useContext, useEffect } from 'react'
 import { BlogContext } from '../pages/blog.page'
 import { Link } from 'react-router-dom'
 import { UserContext } from '../context/userAuth.context'
+import toast, { Toaster } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { isBlogLikedByUser, likeBlog } from '../redux/slices/blogSlice';
+import { store } from '../redux/store/store';
 
 const BlogInteraction = () => {
 
-    let { blog: { title, blog_id, activity: { total_likes, total_comments }, activity, author: { personal_info: { username: author_username } } }, setBlog } = useContext(BlogContext)
-    const { userAuthDetail: { username } } = useContext(UserContext);
+    let { blog, blog: { _id, title, blog_id, activity: { total_likes, total_comments }, activity, author: { personal_info: { username: author_username } } }, setBlog, isLikedByUser, setLikedByUser } = useContext(BlogContext)
+
+    const { userAuthDetail: { username, access_token } } = useContext(UserContext);
+    const dispatch = useDispatch()
+
+    const isBlogLiked = async () => {
+        try {
+            await dispatch(isBlogLikedByUser({ obj: { _id }, toast }))
+            let {blog:{isLikedBlog}} = store.getState()
+            setLikedByUser(Boolean(isLikedBlog))
+        } catch (error) {
+            console.error('Error checking is blog liked !:', error);
+        }
+    }
+
+    useEffect(() => {
+        if (access_token) {
+            isBlogLiked()   
+        }
+    }, [])
+
+    const handleLike = async () => {
+        if (access_token) {
+            setLikedByUser(preVal => !preVal)
+            !isLikedByUser ? total_likes++ : total_likes--
+            setBlog({ ...blog, activity: { ...activity, total_likes } })
+            try {
+                await dispatch(likeBlog({ obj: { _id, isLikedByUser }, toast }))
+
+            } catch (error) {
+                console.error('Error fetching blog:', error);
+            }
+        }
+        else {
+            toast.error('please login to like this blog')
+        }
+    }
 
     return (
         <>
+            <Toaster />
             <hr className='border-gray-100 my-2' />
             <div className='flex gap-6 justify-between'>
 
                 <div className='flex gap-3 items-center'>
-                    <button className='w-9 h-9 rounded-full flex items-center justify-center bg-gray-200/80'>
-                        <i className="fi fi-rr-heart"></i>
+                    <button className={`w-9 h-9 rounded-full flex items-center justify-center  ${isLikedByUser ? 'bg-red-100/80 text-red-600' : 'bg-gray-200/80'}`} onClick={handleLike}>
+                        <i className={`fi fi-${isLikedByUser ? 'sr' : 'rr'}-heart`}></i>
                     </button>
                     <p className='text-xl text-gray-400'>{total_likes}</p>
 
@@ -35,4 +75,4 @@ const BlogInteraction = () => {
     )
 }
 
-export default BlogInteraction
+export default memo(BlogInteraction)

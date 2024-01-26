@@ -1,5 +1,5 @@
 import React, { memo, useContext, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ROUTES } from '../services/routes'
 import logo from '../imgs/logo.png'
 import AnimationWrapper from '../common/page_animation'
@@ -16,8 +16,10 @@ import { createBlog } from '../redux/slices/blogSlice'
 const BlogEditor = () => {
 
     let { blog, blog: { title, des, tags, content, banner }, setBlog, textEditor, setEditorState } = useContext(EditorContext)
+    let {blog_id} = useParams()
 
     useCustomEditor();
+
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -90,7 +92,7 @@ const BlogEditor = () => {
                 let loadingToast = toast.loading('Saving Draft...')
                 e.target.classList?.add('disable')
         
-                let blogObj = { title, content, banner, draft: true }
+                let blogObj = { title, content, banner, draft: true ,id:blog_id}
                 await dispatch(createBlog({ blogObj, toast, handlePublishRes: handlePublishRes(e) }))
         
                 e.target.classList.remove('disable')
