@@ -11,6 +11,7 @@ import BlogPostCard from '../components/blog-post.component'
 import PageNotFound from './404.page'
 import toast, { Toaster } from 'react-hot-toast';
 import BlogContent from '../components/blog-content.component'
+import CommentsContainer from '../components/comments.component'
 
 export const blogStructure = { title: '', des: '', content: [], tags: [], author: { personal_info: { fullname: '', username: '', profile_img: '', bio: "'" } }, banner: '', publishedAt: '' }
 
@@ -25,7 +26,7 @@ const BlogPage = () => {
     const [similarBlogs, setSimilarBlogs] = useState(null)
     const [loading, setLoading] = useState(true)
     const [isLikedByUser,setLikedByUser] = useState(false)
-    const [commentsWrapper,setCommentsWrapper] = useState(true)
+    const [commentsWrapper,setCommentsWrapper] = useState(false)
     const [totalParentCommentsLoaded,setTotalParentCommentsLoaded] = useState(0)
     
     let { title, content, banner, author: { personal_info: { fullname, username: author_username, profile_img } }, publishedAt } = blog

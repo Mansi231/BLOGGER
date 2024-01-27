@@ -3,6 +3,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import userRoutes from './routes/userRoutes.js'
 import blogRoutes from './routes/blogRoutes.js'
+import commentRoutes from './routes/commentRoutes.js'
 import uploadUrlRoute from './routes/uploadUrlRoute.js'
 import cors from 'cors'; // Import the cors middleware
 import admin from 'firebase-admin'
@@ -16,12 +17,13 @@ server.use(express.json())
 server.use(cors());
 server.use(express.urlencoded({
     extended: true
-    }));
-server.use('/api/user',userRoutes)
-server.use('/api',uploadUrlRoute)
-server.use('/api/blog',blogRoutes)
+}));
+server.use('/api', uploadUrlRoute)
+server.use('/api/user', userRoutes)
+server.use('/api/blog', blogRoutes)
+server.use('/api/comment', commentRoutes)
 
-admin.initializeApp({credential: admin.credential.cert(serviceAccountKey)})
+admin.initializeApp({ credential: admin.credential.cert(serviceAccountKey) })
 
 mongoose.connect(process.env.MONGODB_URI, { autoIndex: true }).then((res) => console.log('database connection successfull')).catch((err) => console.log(`error in database connection : ${err}`))
 
